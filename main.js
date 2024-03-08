@@ -29,6 +29,12 @@ dogImage.onload = function() {
 };
 dogImage.src = "images/dog.png";
 
+// Load the background music
+let bgMusic = new Audio("sounds/background.mp3");
+
+// Loading sound effect
+let eatSound = new Audio("sounds/bite.mp3");
+
 // Game objects
 var dog = {
     speed: 256,
@@ -109,6 +115,15 @@ var update = function(modifier) {
         ) {
             ++meatCaught; // Keeps track of score
             reset();
+            
+            // Play the background music
+            bgMusic.loop = true; // Set the music to loop
+            bgMusic.play();
+            bgMusic.volume = 0.1            
+            
+            // Play the sound when the dog eats the meat
+            eatSound.play();
+            eatSound.volume = 1
         }
     }
 
