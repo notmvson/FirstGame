@@ -1,8 +1,8 @@
 // Create the canvas
 let canvas = document.createElement("canvas");
 let ctx = canvas.getContext("2d");
-canvas.width = 700;
-canvas.height = 600;
+canvas.width = 1000;
+canvas.height = 1000;
 document.body.appendChild(canvas);
 
 // Background image
@@ -11,7 +11,23 @@ let bgImage = new Image();
 bgImage.onload = function() {
     bgReady = true;
 };
-bgImage.src = "images/background.png";
+bgImage.src = "images/background.jpeg";
+
+// Horizontal border image
+let edgeReady = false;
+let edgeImage = new Image();
+edgeImage.onload = function() {
+    edgeReady = true;
+};
+edgeImage.src = "images/edge1.jpeg";
+
+// Vertical border image
+let edgeReady2 = false;
+let edgeImage2 = new Image();
+edgeImage2.onload = function() {
+    edgeReady2 = true;
+};
+edgeImage2.src = "images/edge2.jpeg";
 
 // Meat image
 let meatReady = false;
@@ -29,11 +45,16 @@ dogImage.onload = function() {
 };
 dogImage.src = "images/dog.png";
 
-// Load the background music
+// Background music
 let bgMusic = new Audio("sounds/background.mp3");
 
-// Loading sound effect
-let eatSound = new Audio("sounds/bite.mp3");
+// Bite sound
+let eatSound = "sounds/bite.mp3";
+
+// Gameover sound
+let gameOver = "sounds/gameover.wav";
+
+let soundEfx = document.getElementById("soundEfx");
 
 // Game objects
 var dog = {
@@ -79,6 +100,8 @@ var left = false;
 var right = false;
 var up = false;
 var down = false;
+dog.x = (canvas.width / 2) - 16;
+dog.y = (canvas.height / 2) - 16;
 
 // Update game objects
 var update = function(modifier) {
@@ -88,22 +111,22 @@ var update = function(modifier) {
     up = false;
     down = false;
 
-    if (37 in keysDown && dog.x > (32)) { // Left key
+    if (37 in keysDown && dog.x > (50)) { // Left key
         dog.x -= dog.speed * modifier;
         left = true;
     }
 
-    if (39 in keysDown && dog.x < canvas.width - (96)) { // Right key
+    if (39 in keysDown && dog.x < canvas.width - (114)) { // Right key
         dog.x += dog.speed * modifier;
         right = true;
     }
 
-    if (38 in keysDown && dog.y > (32)) { // Up key
+    if (38 in keysDown && dog.y > (50)) { // Up key
         dog.y -= dog.speed * modifier;
         up = true;
     }
 
-    if (40 in keysDown && dog.y < canvas.height - (96)) { // Down key
+    if (40 in keysDown && dog.y < canvas.height - (114)) { // Down key
         dog.y += dog.speed * modifier;
         down = true;
 
@@ -112,18 +135,31 @@ var update = function(modifier) {
             && meat.x <= (dog.x + 32)
             && dog.y <= (meat.y + 32)
             && meat.y <= (dog.y + 32)
-        ) {
+            ) {
             ++meatCaught; // Keeps track of score
-            reset();
+
+            // Plays eating sound
+            soundEfx.src = eatSound;
+            soundEfx.play();
+            soundEfx.volume = 1;
             
-            // Play the background music
-            bgMusic.loop = true; // Set the music to loop
-            bgMusic.play();
-            bgMusic.volume = 0.1            
-            
-            // Play the sound when the dog eats the meat
-            eatSound.play();
-            eatSound.volume = 1
+            if (meatCaught < 3)
+            {
+                reset();
+            }
+            else
+            {
+                /*
+                soundEfx.addEventListener("ended", function() {
+                    alert("Game over, you won!")
+                });
+                */
+                bgMusic.loop = false;
+                soundEfx.src = gameOver;
+                soundEfx.play();
+                soundEfx.volume = 1;
+                alert("Game over, you won!");
+            }
         }
     }
 
@@ -149,6 +185,16 @@ var render = function() {
         ctx.drawImage(bgImage, 0, 0);
     }
 
+    if (edgeReady) {
+        ctx.drawImage(edgeImage, 0, 0);
+        ctx.drawImage(edgeImage, 0, 936);
+    }
+
+    if (edgeReady2) {
+        ctx.drawImage(edgeImage2, 0, 0);
+        ctx.drawImage(edgeImage2, 936, 0);
+    }
+
     if (dogReady) {
         ctx.drawImage(dogImage, srcX, srcY, width, height, dog.x, dog.y, width, height);
     }
@@ -156,7 +202,7 @@ var render = function() {
     if (meatReady) {
         ctx.drawImage(meatImage, meat.x, meat.y);
     }
-
+    
     ctx.fillSytle = "rgb(250, 250, 250)";
     ctx.font = "28px Helvetica";
     ctx.textAlign = "left";
@@ -172,11 +218,16 @@ var main = function() {
     render();
     then = now;
     requestAnimationFrame(main);
+
+    // Play the background music
+    bgMusic.loop = true; // Set the music to loop
+    bgMusic.play();
+    bgMusic.volume = 0.1;
 };
 
 var reset = function() {
-    dog.x = (canvas.width / 2) - 16;
-    dog.y = (canvas.height / 2) - 16;
+    //dog.x = (canvas.width / 2) - 16;
+    //dog.y = (canvas.height / 2) - 16;
 
     meat.x = 32 + (Math.random() * (canvas.width - 96));
     meat.y = 32 + (Math.random() * (canvas.height - 96));
