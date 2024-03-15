@@ -81,7 +81,8 @@ let soundEfx = document.getElementById("soundEfx");
 
 // Game objects
 var dog = {
-    speed: 256,
+    //speed: 256,
+    speed: 150,
     x: 0,
     y: 0
 };
@@ -186,18 +187,44 @@ var update = function(modifier) {
     }
 
     if (
-        dog.x <= (meat.x + 32)
-        && meat.x <= (dog.x + 32)
-        && dog.y <= (meat.y + 32)
-        && meat.y <= (dog.y + 32)
+        dog.x <= (meat.x + 20)
+        && meat.x <= (dog.x + 50)
+        && dog.y <= (meat.y + 10)
+        && meat.y <= (dog.y + 45)
     ) {
-
         // Plays eating sound
         soundEfx.src = eatSound;
         soundEfx.play();
         soundEfx.volume = 1;
         ++meatCaught; // Keeps track of score
-            reset();
+        reset();
+    }
+
+    if (
+        dog.x <= (hole1.x + 25) // left of dog, right of hole
+        && hole1.x <= (dog.x + 20)
+        && dog.y <= (hole1.y + 20) // top of dog, bottom of hole
+        && hole1.y <= (dog.y + 25) // bottom of dog, top of hole
+    ) {
+        gameOver();
+    }
+
+    if (
+        dog.x <= (hole2.x + 25) // left of dog, right of hole
+        && hole2.x <= (dog.x + 20)
+        && dog.y <= (hole2.y + 20) // top of dog, bottom of hole
+        && hole2.y <= (dog.y + 25) // bottom of dog, top of hole
+    ) {
+        gameOver();
+    }
+
+    if (
+        dog.x <= (hole3.x + 25) // left of dog, right of hole
+        && hole3.x <= (dog.x + 20)
+        && dog.y <= (hole3.y + 20) // top of dog, bottom of hole
+        && hole3.y <= (dog.y + 25) // bottom of dog, top of hole
+    ) {
+        gameOver();
     }
 
     // Determines appropriate row for animation
@@ -239,19 +266,18 @@ var render = function() {
         ctx.drawImage(edgeImage2, 936, 0);
     }
 
-    if (dogReady) {
-        ctx.drawImage(dogImage, srcX, srcY, width, height, dog.x, dog.y, width, height);
-        //ctx.drawImage(dogImage, dog.x, dog.y);
-    }
-
-    if (meatReady) {
-        ctx.drawImage(meatImage, meat.x, meat.y);
-    }
-
     if (holeReady) {
         ctx.drawImage(holeImage, hole1.x, hole1.y);
         ctx.drawImage(holeImage, hole2.x, hole2.y);
         ctx.drawImage(holeImage, hole3.x, hole3.y);
+    }
+
+    if (dogReady) {
+        ctx.drawImage(dogImage, srcX, srcY, width, height, dog.x, dog.y, width, height);
+    }
+
+    if (meatReady) {
+        ctx.drawImage(meatImage, meat.x, meat.y);
     }
     
     ctx.fillSytle = "rgb(250, 250, 250)";
@@ -288,7 +314,7 @@ var reset = function() {
         placeItem(hole2);
         placeItem(hole3);
 
-        if (meatCaught === 3) {
+        if (meatCaught === 5) {
             alert("Game over, you won!");
             soundEfx.src = gameWin;
             soundEfx.play();
