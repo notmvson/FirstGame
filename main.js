@@ -5,6 +5,18 @@ canvas.width = 1000;
 canvas.height = 1000;
 document.body.appendChild(canvas);
 
+let chessBoard = [
+    ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
+    ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
+    ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
+    ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
+    ['x', 'x', 'x', 'x', 'o', 'x', 'x', 'x', 'x'],
+    ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
+    ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
+    ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
+    ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
+];
+
 // Background image
 let bgReady = false;
 let bgImage = new Image();
@@ -45,14 +57,25 @@ dogImage.onload = function() {
 };
 dogImage.src = "images/dog.png";
 
+// Hole image
+let holeReady = false;
+let holeImage = new Image();
+holeImage.onload = function() {
+    holeReady = true;
+};
+holeImage.src = "images/hole.png";
+
 // Background music
 let bgMusic = new Audio("sounds/background.mp3");
 
 // Bite sound
 let eatSound = "sounds/bite.mp3";
 
-// Gameover sound
-let gameOver = "sounds/gameover.wav";
+// Gameover win sound
+let gameWin = "sounds/win.wav";
+
+// Gameover lose sound
+let gameLose = "sounds/lose.wav";
 
 let soundEfx = document.getElementById("soundEfx");
 
@@ -68,7 +91,23 @@ var meat = {
     y: 0
 };
 
+var hole1 = {
+    x: 0,
+    y: 0
+}
+
+var hole2 = {
+    x: 0,
+    y: 0
+}
+
+var hole3 = {
+    x: 0,
+    y: 0
+}
+
 var meatCaught = 0;
+var died = false;
 
 // Keyboard controls
 var keysDown = {};
@@ -100,67 +139,65 @@ var left = false;
 var right = false;
 var up = false;
 var down = false;
+
 dog.x = (canvas.width / 2) - 16;
 dog.y = (canvas.height / 2) - 16;
 
 // Update game objects
 var update = function(modifier) {
+    
     ctx.clearRect(dog.x, dog.y, width, height);
     left = false;
     right = false;
     up = false;
     down = false;
+    
 
-    if (37 in keysDown && dog.x > (50)) { // Left key
-        dog.x -= dog.speed * modifier;
-        left = true;
-    }
-
-    if (39 in keysDown && dog.x < canvas.width - (114)) { // Right key
-        dog.x += dog.speed * modifier;
-        right = true;
-    }
-
-    if (38 in keysDown && dog.y > (50)) { // Up key
+    if (38 in keysDown) { // Up key
         dog.y -= dog.speed * modifier;
+        if (dog.y < (50)) {
+            dog.y = 50;
+        }
         up = true;
     }
 
-    if (40 in keysDown && dog.y < canvas.height - (114)) { // Down key
+    if (40 in keysDown) { // Down key
         dog.y += dog.speed * modifier;
-        down = true;
-
-        if (
-            dog.x <= (meat.x + 32)
-            && meat.x <= (dog.x + 32)
-            && dog.y <= (meat.y + 32)
-            && meat.y <= (dog.y + 32)
-            ) {
-            ++meatCaught; // Keeps track of score
-
-            // Plays eating sound
-            soundEfx.src = eatSound;
-            soundEfx.play();
-            soundEfx.volume = 1;
-            
-            if (meatCaught < 3)
-            {
-                reset();
-            }
-            else
-            {
-                /*
-                soundEfx.addEventListener("ended", function() {
-                    alert("Game over, you won!")
-                });
-                */
-                bgMusic.loop = false;
-                soundEfx.src = gameOver;
-                soundEfx.play();
-                soundEfx.volume = 1;
-                alert("Game over, you won!");
-            }
+        if (dog.y > (1000 - 114)) {
+            dog.y = 1000 - 114;
         }
+       down = true;
+    }
+
+    if (37 in keysDown) { // Left key
+        dog.x -= dog.speed * modifier;
+        if (dog.x < (50)) {
+            dog.x = 50;
+        }
+        left = true;
+    }
+
+    if (39 in keysDown) { // Right key
+        dog.x += dog.speed * modifier;
+        if (dog.x > (1000 - 114)) {
+            dog.x = 1000 - 114
+        }
+        right = true;
+    }
+
+    if (
+        dog.x <= (meat.x + 32)
+        && meat.x <= (dog.x + 32)
+        && dog.y <= (meat.y + 32)
+        && meat.y <= (dog.y + 32)
+    ) {
+
+        // Plays eating sound
+        soundEfx.src = eatSound;
+        soundEfx.play();
+        soundEfx.volume = 1;
+        ++meatCaught; // Keeps track of score
+            reset();
     }
 
     // Determines appropriate row for animation
@@ -177,7 +214,14 @@ var update = function(modifier) {
     // Updates frame count for animation
     curXFrame = ++curXFrame % frameCount;
     srcX = curXFrame * width;
+    
 };
+
+let gameOver = function() {
+    alert("You fell into a hole, game over")
+    died = true;
+    reset();
+}
 
 // Render function
 var render = function() {
@@ -197,10 +241,17 @@ var render = function() {
 
     if (dogReady) {
         ctx.drawImage(dogImage, srcX, srcY, width, height, dog.x, dog.y, width, height);
+        //ctx.drawImage(dogImage, dog.x, dog.y);
     }
 
     if (meatReady) {
         ctx.drawImage(meatImage, meat.x, meat.y);
+    }
+
+    if (holeReady) {
+        ctx.drawImage(holeImage, hole1.x, hole1.y);
+        ctx.drawImage(holeImage, hole2.x, hole2.y);
+        ctx.drawImage(holeImage, hole3.x, hole3.y);
     }
     
     ctx.fillSytle = "rgb(250, 250, 250)";
@@ -226,13 +277,43 @@ var main = function() {
 };
 
 var reset = function() {
-    //dog.x = (canvas.width / 2) - 16;
-    //dog.y = (canvas.height / 2) - 16;
+    if (died == true) {
+        soundEfx.src = gameLose;
+        soundEfx.play();
+        soundEfx.volume = 1;
+    }
+    else {
+        placeItem(meat);
+        placeItem(hole1);
+        placeItem(hole2);
+        placeItem(hole3);
 
-    meat.x = 32 + (Math.random() * (canvas.width - 96));
-    meat.y = 32 + (Math.random() * (canvas.height - 96));
+        if (meatCaught === 3) {
+            alert("Game over, you won!");
+            soundEfx.src = gameWin;
+            soundEfx.play();
+            soundEfx.volume = 1;
+        }
+    }
 };
 
+let placeItem = function(character)
+ {
+    let X = 5;
+    let Y = 6;
+    let success = false;
+    while (!success) {
+        X = Math.floor(Math.random() * 9); // Returns 0-8
+        Y = Math.floor(Math.random() * 9); 
+
+        if(chessBoard[X][Y] === 'x') {
+            success = true;
+        }
+    }
+    chessBoard[X][Y] = 'o'; // Marks taken square
+    character.x = (X * 100) + 64; // Allow for border
+    character.y = (Y * 100) + 64;
+ }
 // Initialization
 var then = Date.now();
 reset();
