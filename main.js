@@ -4,6 +4,8 @@ let ctx = canvas.getContext("2d");
 canvas.width = 1000;
 canvas.height = 1000;
 document.body.appendChild(canvas);
+counter = 0;
+gameOverFlag = false;
 
 let chessBoard = [
     ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
@@ -57,6 +59,14 @@ dogImage.onload = function() {
 };
 dogImage.src = "images/dog.png";
 
+// Person image
+let personReady = false;
+let personImage = new Image();
+personImage.onload = function() {
+    personReady = true;
+};
+personImage.src = "images/person.png";
+
 // Hole image
 let holeReady = false;
 let holeImage = new Image();
@@ -81,7 +91,6 @@ let soundEfx = document.getElementById("soundEfx");
 
 // Game objects
 var dog = {
-    //speed: 256,
     speed: 150,
     x: 0,
     y: 0
@@ -92,20 +101,26 @@ var meat = {
     y: 0
 };
 
+var person = {
+    x: 62,
+    y: 300,
+    direction: 1
+};
+
 var hole1 = {
     x: 0,
     y: 0
-}
+};
 
 var hole2 = {
     x: 0,
     y: 0
-}
+};
 
 var hole3 = {
     x: 0,
     y: 0
-}
+};
 
 var meatCaught = 0;
 var died = false;
@@ -121,19 +136,19 @@ addEventListener("keyup", function(e) {
     delete keysDown[e.keyCode];
 }, false);
 
-// Animation variables
+// Dog animation variables
+var rows = 4;
+var cols = 8;
 var trackDown = 0;
 var trackRight = 2;
 var trackUp = 3;
 var trackLeft = 1;
-var rows = 4;
-var cols = 8;
 var spriteWidth = 512;
 var spriteHeight = 246;
 var width = spriteWidth / cols;
 var height = spriteHeight / rows;
 var curXFrame = 0;
-var frameCount = 1;
+var frameCount = 8;
 var srcX = 0;
 var srcY = 0;
 var left = false;
@@ -141,111 +156,164 @@ var right = false;
 var up = false;
 var down = false;
 
+// Person animation variables
+var pRows = 4;
+var pCols = 8;
+var pTrackRight = 2;
+var pTrackLeft = 3;
+var pSpriteWidth = 256;
+var pSpriteHeight = 256;
+var pWidth = pSpriteWidth / pCols;
+var pHeight = pSpriteHeight / pRows;
+var pcurXFrame = 0;
+var pFrameCount = 8;
+var pSrcX = 0;
+var pSrcY = 0;
+
 dog.x = (canvas.width / 2) - 16;
 dog.y = (canvas.height / 2) - 16;
 
 // Update game objects
 var update = function(modifier) {
+    if (!gameOverFlag)
+    {
+        //ctx.clearRect(dog.x, dog.y, width, height);
+        left = false;
+        right = false;
+        up = false;
+        down = false;
+        
+
+        if (38 in keysDown) { // Up key
+            dog.y -= dog.speed * modifier;
+            if (dog.y < (50)) {
+                dog.y = 50;
+            }
+            up = true;
+        }
+
+        if (40 in keysDown) { // Down key
+            dog.y += dog.speed * modifier;
+            if (dog.y > (1000 - 114)) {
+                dog.y = 1000 - 114;
+            }
+        down = true;
+        }
+
+        if (37 in keysDown) { // Left key
+            dog.x -= dog.speed * modifier;
+            if (dog.x < (50)) {
+                dog.x = 50;
+            }
+            left = true;
+        }
+
+        if (39 in keysDown) { // Right key
+            dog.x += dog.speed * modifier;
+            if (dog.x > (1000 - 114)) {
+                dog.x = 1000 - 114
+            }
+            right = true;
+        }
     
-    ctx.clearRect(dog.x, dog.y, width, height);
-    left = false;
-    right = false;
-    up = false;
-    down = false;
-    
-
-    if (38 in keysDown) { // Up key
-        dog.y -= dog.speed * modifier;
-        if (dog.y < (50)) {
-            dog.y = 50;
+        person.x = person.x + (1 * person.direction);
+        if (person.x > 910) {
+            person.direction = -1;
+            pSrcY = pTrackLeft * pHeight;
         }
-        up = true;
-    }
-
-    if (40 in keysDown) { // Down key
-        dog.y += dog.speed * modifier;
-        if (dog.y > (1000 - 114)) {
-            dog.y = 1000 - 114;
+        if (person.x < 64) {
+            person.direction = 1;
+            pSrcY = pTrackRight * pHeight;
         }
-       down = true;
-    }
+        
 
-    if (37 in keysDown) { // Left key
-        dog.x -= dog.speed * modifier;
-        if (dog.x < (50)) {
-            dog.x = 50;
+        if (
+            dog.x <= (meat.x + 20) // left of dog, right of meat
+            && meat.x <= (dog.x + 50) // right of dog, left of meat
+            && dog.y <= (meat.y + 10) // top of dog, bottom of meat
+            && meat.y <= (dog.y + 45) // bottom of dog, top of meat
+        ) {
+            // Plays eating sound
+            soundEfx.src = eatSound;
+            soundEfx.play();
+            soundEfx.volume = 1;
+            ++meatCaught; // Keeps track of score
+            reset();
         }
-        left = true;
-    }
 
-    if (39 in keysDown) { // Right key
-        dog.x += dog.speed * modifier;
-        if (dog.x > (1000 - 114)) {
-            dog.x = 1000 - 114
+        if (
+            dog.x <= (hole1.x + 25) // left of dog, right of hole
+            && hole1.x <= (dog.x + 20) // right of dog, left of hole
+            && dog.y <= (hole1.y + 20) // top of dog, bottom of hole
+            && hole1.y <= (dog.y + 25) // bottom of dog, top of hole
+        ) {
+            hGameOver();
         }
-        right = true;
-    }
 
-    if (
-        dog.x <= (meat.x + 20)
-        && meat.x <= (dog.x + 50)
-        && dog.y <= (meat.y + 10)
-        && meat.y <= (dog.y + 45)
-    ) {
-        // Plays eating sound
-        soundEfx.src = eatSound;
-        soundEfx.play();
-        soundEfx.volume = 1;
-        ++meatCaught; // Keeps track of score
-        reset();
-    }
+        if (
+            dog.x <= (hole2.x + 25) // left of dog, right of hole
+            && hole2.x <= (dog.x + 20) // right of dog, left of hole
+            && dog.y <= (hole2.y + 20) // top of dog, bottom of hole
+            && hole2.y <= (dog.y + 25) // bottom of dog, top of hole
+        ) {
+            hGameOver();
+        }
 
-    if (
-        dog.x <= (hole1.x + 25) // left of dog, right of hole
-        && hole1.x <= (dog.x + 20)
-        && dog.y <= (hole1.y + 20) // top of dog, bottom of hole
-        && hole1.y <= (dog.y + 25) // bottom of dog, top of hole
-    ) {
-        gameOver();
-    }
+        if (
+            dog.x <= (hole3.x + 25) // left of dog, right of hole
+            && hole3.x <= (dog.x + 20) // right of dog, left of hole
+            && dog.y <= (hole3.y + 20) // top of dog, bottom of hole
+            && hole3.y <= (dog.y + 25) // bottom of dog, top of hole
+        ) {
+            hGameOver();
+        }
 
-    if (
-        dog.x <= (hole2.x + 25) // left of dog, right of hole
-        && hole2.x <= (dog.x + 20)
-        && dog.y <= (hole2.y + 20) // top of dog, bottom of hole
-        && hole2.y <= (dog.y + 25) // bottom of dog, top of hole
-    ) {
-        gameOver();
-    }
+        if (
+            dog.x <= (person.x + 20) // left of dog, right of person
+            && person.x <= (dog.x + 45) // right of dog, left of person
+            && dog.y <= (person.y + 32) // top of dog, bottom of person
+            && person.y <= (dog.y + 32) // bottom of dog, top of person
+        ) {
+            pGameOver();
+        }
 
-    if (
-        dog.x <= (hole3.x + 25) // left of dog, right of hole
-        && hole3.x <= (dog.x + 20)
-        && dog.y <= (hole3.y + 20) // top of dog, bottom of hole
-        && hole3.y <= (dog.y + 25) // bottom of dog, top of hole
-    ) {
-        gameOver();
-    }
+        // Updates frame count for animation
+        if (counter == 8) {
+            curXFrame = ++curXFrame % frameCount;
+            pcurXFrame = ++pcurXFrame % pFrameCount;
+            counter = 0;
+        } else {
+            counter++;
+        }
+        srcX = curXFrame * width;
+        pSrcX = pcurXFrame * pWidth;
 
-    // Determines appropriate row for animation
-    if (left) {
-        srcY = trackLeft * height;
-    } else if (right) {
-        srcY = trackRight * height;
-    } else if (up) {
-        srcY = trackUp * height;
-    } else if (down) {
-        srcY = trackDown * height;
-    }
+        // Determines appropriate row for animation
+        if (left) {
+            srcY = trackLeft * height;
+            
+        } else if (right) {
+            srcY = trackRight * height;
+            
+        } else if (up) {
+            srcY = trackUp * height;
 
-    // Updates frame count for animation
-    curXFrame = ++curXFrame % frameCount;
-    srcX = curXFrame * width;
-    
+        } else if (down) {
+            srcY = trackDown * height;
+        }
+    }
 };
 
-let gameOver = function() {
+let hGameOver = function() {
+    gameOverFlag = true;
     alert("You fell into a hole, game over")
+    died = true;
+    reset();
+}
+
+let pGameOver = function() {
+    gameOverFlag = true;
+    alert("You ran into a person, game over")
     died = true;
     reset();
 }
@@ -272,6 +340,10 @@ var render = function() {
         ctx.drawImage(holeImage, hole3.x, hole3.y);
     }
 
+    if (personReady) {
+        ctx.drawImage(personImage, pSrcX, pSrcY, pWidth, pHeight, person.x, person.y, pWidth, pHeight);
+    }
+
     if (dogReady) {
         ctx.drawImage(dogImage, srcX, srcY, width, height, dog.x, dog.y, width, height);
     }
@@ -279,12 +351,12 @@ var render = function() {
     if (meatReady) {
         ctx.drawImage(meatImage, meat.x, meat.y);
     }
-    
-    ctx.fillSytle = "rgb(250, 250, 250)";
+
+    ctx.fillStyle = "rgb(250, 250, 250)";
     ctx.font = "28px Helvetica";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    ctx.fillText("Meat Count: " + meatCaught, 32, 32);
+    ctx.fillText("Meat Count: " + meatCaught, 70, 70);
 };
 
 // Main game loop
@@ -302,7 +374,9 @@ var main = function() {
     bgMusic.volume = 0.1;
 };
 
-var reset = function() {
+var reset = function() { 
+    person.direction = 1;
+
     if (died == true) {
         soundEfx.src = gameLose;
         soundEfx.play();
@@ -315,6 +389,7 @@ var reset = function() {
         placeItem(hole3);
 
         if (meatCaught === 5) {
+            gameOverFlag = true;
             alert("Game over, you won!");
             soundEfx.src = gameWin;
             soundEfx.play();
