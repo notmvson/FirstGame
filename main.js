@@ -101,9 +101,15 @@ var meat = {
     y: 0
 };
 
-var person = {
+var person1 = {
     x: 62,
     y: 300,
+    direction: -1
+};
+
+var person2 = {
+    x: 910,
+    y: 650,
     direction: 1
 };
 
@@ -118,6 +124,51 @@ var hole2 = {
 };
 
 var hole3 = {
+    x: 0,
+    y: 0
+};
+
+var hole4 = {
+    x: 0,
+    y: 0
+};
+
+var hole5 = {
+    x: 0,
+    y: 0
+};
+
+var hole6 = {
+    x: 0,
+    y: 0
+};
+
+var hole7 = {
+    x: 0,
+    y: 0
+};
+
+var hole8 = {
+    x: 0,
+    y: 0
+};
+
+var hole9 = {
+    x: 0,
+    y: 0
+};
+
+var hole10 = {
+    x: 0,
+    y: 0
+};
+
+var hole11 = {
+    x: 0,
+    y: 0
+};
+
+var hole12 = {
     x: 0,
     y: 0
 };
@@ -160,7 +211,9 @@ var down = false;
 var pRows = 4;
 var pCols = 8;
 var pTrackRight = 2;
+var pTrackRight2 = 2;
 var pTrackLeft = 3;
+var pTrackLeft2 = 3;
 var pSpriteWidth = 256;
 var pSpriteHeight = 256;
 var pWidth = pSpriteWidth / pCols;
@@ -168,7 +221,9 @@ var pHeight = pSpriteHeight / pRows;
 var pcurXFrame = 0;
 var pFrameCount = 8;
 var pSrcX = 0;
+var pSrcX2 = 0;
 var pSrcY = 0;
+var pSrcY2 = 0;
 
 dog.x = (canvas.width / 2) - 16;
 dog.y = (canvas.height / 2) - 16;
@@ -197,7 +252,7 @@ var update = function(modifier) {
             if (dog.y > (1000 - 114)) {
                 dog.y = 1000 - 114;
             }
-        down = true;
+            down = true;
         }
 
         if (37 in keysDown) { // Left key
@@ -216,14 +271,24 @@ var update = function(modifier) {
             right = true;
         }
     
-        person.x = person.x + (1 * person.direction);
-        if (person.x > 910) {
-            person.direction = -1;
+        person1.x = person1.x + (3 * person1.direction);
+        if (person1.x > 910) {
+            person1.direction = -1;
             pSrcY = pTrackLeft * pHeight;
         }
-        if (person.x < 64) {
-            person.direction = 1;
+        if (person1.x < 64) {
+            person1.direction = 1;
             pSrcY = pTrackRight * pHeight;
+        }
+
+        person2.x = person2.x + (2 * person2.direction);
+        if (person2.x > 910) {
+            person2.direction = -1;
+            pSrcY2 = pTrackLeft2 * pHeight;
+        }
+        if (person2.x < 64) {
+            person2.direction = 1;
+            pSrcY2 = pTrackRight2 * pHeight;
         }
         
 
@@ -269,10 +334,100 @@ var update = function(modifier) {
         }
 
         if (
-            dog.x <= (person.x + 20) // left of dog, right of person
-            && person.x <= (dog.x + 45) // right of dog, left of person
-            && dog.y <= (person.y + 32) // top of dog, bottom of person
-            && person.y <= (dog.y + 32) // bottom of dog, top of person
+            dog.x <= (hole4.x + 25) // left of dog, right of hole
+            && hole4.x <= (dog.x + 20) // right of dog, left of hole
+            && dog.y <= (hole4.y + 20) // top of dog, bottom of hole
+            && hole4.y <= (dog.y + 25) // bottom of dog, top of hole
+        ) {
+            hGameOver();
+        }
+
+        if (
+            dog.x <= (hole5.x + 25) // left of dog, right of hole
+            && hole5.x <= (dog.x + 20) // right of dog, left of hole
+            && dog.y <= (hole5.y + 20) // top of dog, bottom of hole
+            && hole5.y <= (dog.y + 25) // bottom of dog, top of hole
+        ) {
+            hGameOver();
+        }
+
+        if (
+            dog.x <= (hole6.x + 25) // left of dog, right of hole
+            && hole6.x <= (dog.x + 20) // right of dog, left of hole
+            && dog.y <= (hole6.y + 20) // top of dog, bottom of hole
+            && hole6.y <= (dog.y + 25) // bottom of dog, top of hole
+        ) {
+            hGameOver();
+        }
+
+        if (
+            dog.x <= (hole7.x + 25) // left of dog, right of hole
+            && hole7.x <= (dog.x + 20) // right of dog, left of hole
+            && dog.y <= (hole7.y + 20) // top of dog, bottom of hole
+            && hole7.y <= (dog.y + 25) // bottom of dog, top of hole
+        ) {
+            hGameOver();
+        }
+
+        if (
+            dog.x <= (hole8.x + 25) // left of dog, right of hole
+            && hole8.x <= (dog.x + 20) // right of dog, left of hole
+            && dog.y <= (hole8.y + 20) // top of dog, bottom of hole
+            && hole8.y <= (dog.y + 25) // bottom of dog, top of hole
+        ) {
+            hGameOver();
+        }
+
+        if (
+            dog.x <= (hole9.x + 25) // left of dog, right of hole
+            && hole9.x <= (dog.x + 20) // right of dog, left of hole
+            && dog.y <= (hole9.y + 20) // top of dog, bottom of hole
+            && hole9.y <= (dog.y + 25) // bottom of dog, top of hole
+        ) {
+            hGameOver();
+        }
+
+        if (
+            dog.x <= (hole10.x + 25) // left of dog, right of hole
+            && hole10.x <= (dog.x + 20) // right of dog, left of hole
+            && dog.y <= (hole10.y + 20) // top of dog, bottom of hole
+            && hole10.y <= (dog.y + 25) // bottom of dog, top of hole
+        ) {
+            hGameOver();
+        }
+
+        if (
+            dog.x <= (hole11.x + 25) // left of dog, right of hole
+            && hole11.x <= (dog.x + 20) // right of dog, left of hole
+            && dog.y <= (hole11.y + 20) // top of dog, bottom of hole
+            && hole11.y <= (dog.y + 25) // bottom of dog, top of hole
+        ) {
+            hGameOver();
+        }
+
+        if (
+            dog.x <= (hole12.x + 25) // left of dog, right of hole
+            && hole12.x <= (dog.x + 20) // right of dog, left of hole
+            && dog.y <= (hole12.y + 20) // top of dog, bottom of hole
+            && hole12.y <= (dog.y + 25) // bottom of dog, top of hole
+        ) {
+            hGameOver();
+        }
+
+        if (
+            dog.x <= (person1.x + 20) // left of dog, right of person
+            && person1.x <= (dog.x + 45) // right of dog, left of person
+            && dog.y <= (person1.y + 32) // top of dog, bottom of person
+            && person1.y <= (dog.y + 32) // bottom of dog, top of person
+        ) {
+            pGameOver();
+        }
+
+        if (
+            dog.x <= (person2.x + 20) // left of dog, right of person
+            && person2.x <= (dog.x + 45) // right of dog, left of person
+            && dog.y <= (person2.y + 32) // top of dog, bottom of person
+            && person2.y <= (dog.y + 32) // bottom of dog, top of person
         ) {
             pGameOver();
         }
@@ -287,6 +442,8 @@ var update = function(modifier) {
         }
         srcX = curXFrame * width;
         pSrcX = pcurXFrame * pWidth;
+        pSrcX2 = pcurXFrame * pWidth;
+
 
         // Determines appropriate row for animation
         if (left) {
@@ -338,10 +495,20 @@ var render = function() {
         ctx.drawImage(holeImage, hole1.x, hole1.y);
         ctx.drawImage(holeImage, hole2.x, hole2.y);
         ctx.drawImage(holeImage, hole3.x, hole3.y);
+        ctx.drawImage(holeImage, hole4.x, hole4.y);
+        ctx.drawImage(holeImage, hole5.x, hole5.y);
+        ctx.drawImage(holeImage, hole6.x, hole6.y);
+        ctx.drawImage(holeImage, hole7.x, hole7.y);
+        ctx.drawImage(holeImage, hole8.x, hole8.y);
+        ctx.drawImage(holeImage, hole9.x, hole9.y);
+        ctx.drawImage(holeImage, hole10.x, hole10.y);
+        ctx.drawImage(holeImage, hole11.x, hole11.y);
+        ctx.drawImage(holeImage, hole12.x, hole12.y);
     }
 
     if (personReady) {
-        ctx.drawImage(personImage, pSrcX, pSrcY, pWidth, pHeight, person.x, person.y, pWidth, pHeight);
+        ctx.drawImage(personImage, pSrcX, pSrcY, pWidth, pHeight, person1.x, person1.y, pWidth, pHeight);
+        ctx.drawImage(personImage, pSrcX2, pSrcY2, pWidth, pHeight, person2.x, person2.y, pWidth, pHeight);
     }
 
     if (dogReady) {
@@ -369,14 +536,17 @@ var main = function() {
     requestAnimationFrame(main);
 
     // Play the background music
-    bgMusic.loop = true; // Set the music to loop
-    bgMusic.play();
-    bgMusic.volume = 0.1;
+    if (!gameOverFlag) {
+        bgMusic.loop = true; // Set the music to loop
+        bgMusic.play();
+        bgMusic.volume = 0.1;
+    } else {
+        bgMusic.pause();
+        bgMusic.volume = 0;
+    }
 };
 
 var reset = function() { 
-    person.direction = 1;
-
     if (died == true) {
         soundEfx.src = gameLose;
         soundEfx.play();
@@ -387,13 +557,22 @@ var reset = function() {
         placeItem(hole1);
         placeItem(hole2);
         placeItem(hole3);
+        placeItem(hole4);
+        placeItem(hole5);
+        placeItem(hole6);
+        placeItem(hole7);
+        placeItem(hole8);
+        placeItem(hole9);
+        placeItem(hole10);
+        placeItem(hole11);
+        placeItem(hole12);
 
         if (meatCaught === 5) {
-            gameOverFlag = true;
             alert("Game over, you won!");
             soundEfx.src = gameWin;
             soundEfx.play();
             soundEfx.volume = 1;
+            gameOverFlag = true;
         }
     }
 };
@@ -407,7 +586,10 @@ let placeItem = function(character)
         X = Math.floor(Math.random() * 9); // Returns 0-8
         Y = Math.floor(Math.random() * 9); 
 
-        if(chessBoard[X][Y] === 'x') {
+        if (chessBoard[X][Y] === 'x'
+            && (X !== Math.floor(person1.x / 100) || Y !== Math.floor(person1.y / 100))
+            && (X !== Math.floor(person2.x / 100) || Y !== Math.floor(person2.y / 100))
+        ) {
             success = true;
         }
     }
