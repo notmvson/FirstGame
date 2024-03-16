@@ -43,6 +43,22 @@ edgeImage2.onload = function() {
 };
 edgeImage2.src = "images/edge2.jpeg";
 
+// Orange car image
+let carReady = false;
+let carImage = new Image();
+carImage.onload = function() {
+    carReady = true;
+};
+carImage.src = "images/car.png";
+
+// Blue car image
+let carReady2 = false;
+let carImage2 = new Image();
+carImage2.onload = function() {
+    carReady2 = true;
+};
+carImage2.src = "images/car2.png";
+
 // Meat image
 let meatReady = false;
 let meatImage = new Image();
@@ -99,6 +115,18 @@ var dog = {
 var meat = {
     x: 0,
     y: 0
+};
+
+var car = {
+    x: 0,
+    y: 0,
+    direction: 1
+};
+
+var car2 = {
+    x: 0,
+    y: 936,
+    direction: 1
 };
 
 var person1 = {
@@ -232,6 +260,13 @@ dog.y = (canvas.height / 2) - 16;
 var update = function(modifier) {
     if (!gameOverFlag)
     {
+        if (car.x > canvas.width) {
+            car.x = -carImage.width;
+        }
+        if (car2.x > canvas.width) {
+            car2.x = -carImage2.width;
+        }
+
         //ctx.clearRect(dog.x, dog.y, width, height);
         left = false;
         right = false;
@@ -290,7 +325,10 @@ var update = function(modifier) {
             person2.direction = 1;
             pSrcY2 = pTrackRight2 * pHeight;
         }
-        
+
+        car.x = car.x + (4 * car.direction);
+        car2.x = car2.x + (5 * car2.direction);
+
 
         if (
             dog.x <= (meat.x + 20) // left of dog, right of meat
@@ -489,6 +527,14 @@ var render = function() {
     if (edgeReady2) {
         ctx.drawImage(edgeImage2, 0, 0);
         ctx.drawImage(edgeImage2, 936, 0);
+    }
+
+    if (carReady) {
+        ctx.drawImage(carImage, car.x, car.y);
+    }
+
+    if (carReady2) {
+        ctx.drawImage(carImage2, car2.x, car2.y);
     }
 
     if (holeReady) {
