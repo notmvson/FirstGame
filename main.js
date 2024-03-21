@@ -6,6 +6,7 @@ canvas.height = 1000;
 document.body.appendChild(canvas);
 counter = 0;
 gameOverFlag = false;
+let remainingTime = 20;
 
 let chessBoard = [
     ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'],
@@ -496,6 +497,16 @@ var update = function(modifier) {
         } else if (down) {
             srcY = trackDown * height;
         }
+
+        remainingTime -= modifier;
+
+        if (remainingTime <= 0) {
+            alert ("Times up! Game over");
+            died = true;
+            remainingTime = 0;
+            gameOverFlag = true;
+            reset();
+        }
     }
 };
 
@@ -570,6 +581,7 @@ var render = function() {
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
     ctx.fillText("Meat Count: " + meatCaught, 70, 70);
+    ctx.fillText("Time Left: " + Math.ceil(remainingTime), 770, 70);
 };
 
 // Main game loop
@@ -624,7 +636,7 @@ var reset = function() {
 };
 
 let placeItem = function(character)
- {
+{
     let X = 5;
     let Y = 6;
     let success = false;
@@ -642,7 +654,8 @@ let placeItem = function(character)
     chessBoard[X][Y] = 'o'; // Marks taken square
     character.x = (X * 100) + 64; // Allow for border
     character.y = (Y * 100) + 64;
- }
+};
+
 // Initialization
 var then = Date.now();
 reset();
