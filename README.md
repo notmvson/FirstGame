@@ -1,5 +1,5 @@
-<h1>Extreme Dog Park</h1>
-<h2>First Game</h2>
+<h1>Extreme Dog Park Game</h1>
+<h2>Dev209 Final Project</h2>
 <details>
   <summary>Table of Contents</summary>
   <ol>
