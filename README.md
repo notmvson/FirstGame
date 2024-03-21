@@ -12,7 +12,7 @@
 
 <h2 id="about">About the Project</h2>
 <p> The website link to this project can be found here. The aim of this project was to practice my javascript knowledge and attempt to learn new features along the way. This is my first attempt at creating a game.</p>
-<p> This project is intended to be the culmination of knowledge from my Dev209: ClientSide Web Program class and was created as a final project.</p>
+<p> This project is intended to be the culmination of knowledge from my Dev209: ClientSide Web Program class and was created as a final project with the help of my partner Gunhee.</p>
 
 <h2 id="builtWith">Built With</h2>
 <p>This project was built using the following technologies and languages</p>
