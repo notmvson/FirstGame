@@ -167,7 +167,7 @@ document.addEventListener("DOMContentLoaded", function() {
     startButton.style.transform = "translate(-50%, -50%)";
 
     startButton.addEventListener("click", function() {
-        window.location.href = "index2.html";
+        window.location.href = "index.html";
     });
 });
 
